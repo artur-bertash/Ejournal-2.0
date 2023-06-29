@@ -1,0 +1,27 @@
+.smart-button {
+    background-color: #4CAF50;
+    /* Set the background color */
+    color: white;
+    /* Set the text color */
+    padding: 10px 20px;
+    /* Add some padding */
+    font-size: 16px;
+    /* Set the font size */
+    border: none;
+    /* Remove the border */
+    cursor: pointer;
+    /* Add a cursor effect */
+    border-radius: 5px;
+    /* Add rounded corners */
+
+}
+
+
+.smart-button:hover {
+    transition: all .1s ease;
+    box-shadow: 0 0 0 0 #fff, 0 0 0 3px #4CAF50;
+}
+
+.ok-button {
+    text-decoration: none;
+}

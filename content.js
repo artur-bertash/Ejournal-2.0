@@ -79,7 +79,7 @@ Theme();
 ////}
 
 //const onClick = async (e) => {
- // let queryOptions = { active: true, lastFocusedWindow: true };
+ // let queryOptions = { active: true, lastFocusedWindow: true };        sdfsfsdf
   //const [tab] = await chrome.tabs.query(queryOptions)
   //chrome.tabs.remove(tab.id)
 //}

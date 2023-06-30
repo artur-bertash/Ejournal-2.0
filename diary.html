@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyIT extension</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+
+
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url(https://images.wallpapersden.com/image/download/beautiful-cool-mountains-hd_bG1tbmyUmZqaraWkpJRmbmdlrWZlbWU.jpg);
+
+        }
+
+        .content {
+            background-color: #fff;
+            padding: 200px;
+            border-radius: 20px;
+            opacity: 0.7;
+            position: relative;
+
+        }
+
+        .content h1 {
+            text-align: center;
+        }
+
+
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .right-left-button {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+
+        }
+
+        #button-left,
+        #button-right {
+            width: 100px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="content">
+            <div class="right-left-button">
+                <button id="button-left"></button>
+                <button id="button-right"></button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Header 1;</th>
+                        <th>Header 2</th>
+                        <th>Header 3</th>
+                        <th>Header 4</th>
+                        <!-- Add more header columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Row 1, Cell 1</td>
+                        <td>Row 1, Cell 2</td>
+                        <td>Row 1, Cell 3</td>
+                        <td>Row 1, Cell 4</td>
+                        <!-- Add more data cells as needed -->
+                    </tr>
+                    <tr>
+                        <td>Row 2, Cell 1</td>
+                        <td>Row 2, Cell 2</td>
+                        <td>Row 2, Cell 3</td>
+                        <td>Row 2, Cell 4</td>
+                        <!-- Add more data cells as needed -->
+                    </tr>
+                    <!-- Add more table rows as needed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $("#button-right").html("&#10145;");
+        $("#button-left").html("&#11013;");
+
+    </script>
+</body>
+
+</html>

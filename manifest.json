@@ -22,7 +22,9 @@
     "content_scripts": [
         {
             "matches": [
-                "https://e-journal.iea.gov.ua/*/schedule/*"
+                "https://e-journal.iea.gov.ua/*/schedule/*",
+                "http://diary-pro.zzz.com.ua/*",
+                "https://diary-pro.zzz.com.ua/*"
             ],
             "js": [
                 "content.js"

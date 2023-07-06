@@ -6,7 +6,7 @@
 // }
 //}
 
-
+var WASPRESSED = [false]
 // Function to parse the table and extract the data
 function parseTable(table) {
   const headers = Array.from(table.querySelectorAll('thead tr td'));
@@ -109,21 +109,21 @@ function isNone() {
 
 
 function goForwardBack() {
-  reslinks = []
+  const reslinks = [];
   const diaryLinks = document.querySelectorAll('.diary-slider a');
-  if (diaryLinks) {
-    diaryLinks.forEach(link => {
-      const hrefValue = link.getAttribute('href');
-      reslinks.push(hrefValue);
-      return reslinks
 
-    });
-    return
+  diaryLinks.forEach(link => {
+    const hrefValue = link.getAttribute('href');
+    reslinks.push(hrefValue);
+  });
 
-  }
-  //0 is back 1 is forward
-
+  return reslinks;
 }
+
+window.addEventListener("load", function () {
+
+  chrome.runtime.sendMessage({ status: "loaded", backLink: goForwardBack()[0], forwardLink: goForwardBack()[1], wasPressed: WASPRESSED });
+});
 
 function init() {
   if (document.URL.includes("diary-pro")) {
@@ -146,7 +146,9 @@ function init() {
 
     // Sending a message from content.js
     chrome.runtime.sendMessage({ message: "The smart-button was pressed" });
-
+    //window.open(goForwardBack()[1], '_blank');
+    WASPRESSED.push([true])
+    window.location.reload();
     isNone()
 
 

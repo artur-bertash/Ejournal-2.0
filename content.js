@@ -6,7 +6,6 @@
 // }
 //}
 
-var WASPRESSED = [false]
 // Function to parse the table and extract the data
 function parseTable(table) {
   const headers = Array.from(table.querySelectorAll('thead tr td'));
@@ -103,7 +102,7 @@ function isNone() {
     return 'empty';
   }
 
-  result.innerText = checkList(appraisals);
+  return result.innerText = checkList(appraisals);
 
 }
 
@@ -122,7 +121,13 @@ function goForwardBack() {
 
 window.addEventListener("load", function () {
 
-  chrome.runtime.sendMessage({ status: "loaded", backLink: goForwardBack()[0], forwardLink: goForwardBack()[1], wasPressed: WASPRESSED });
+  chrome.runtime.sendMessage({
+    status: "loaded",
+    backLink: goForwardBack()[0],
+    forwardLink: goForwardBack()[1],
+    empty: isNone() == "empty",
+    //data: parseData(),       <------------------------
+  });
 });
 
 function init() {
@@ -147,8 +152,7 @@ function init() {
     // Sending a message from content.js
     chrome.runtime.sendMessage({ message: "The smart-button was pressed" });
     //window.open(goForwardBack()[1], '_blank');
-    WASPRESSED.push([true])
-    window.location.reload();
+    setTimeout(() => window.location.reload(), 50);
     isNone()
 
 

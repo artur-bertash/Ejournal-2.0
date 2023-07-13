@@ -7,7 +7,8 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 });
 
-var wasPressed = [false]
+var collectingState = 0; // 0=idle   1=looking for end/empty   2=getting last 4
+var pagesCollected = 0;
 const collectedData = []
 // Listening for messages in background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -20,15 +21,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 function myFunction() {
   // Your code here
   console.log("The function starts to work");
+  collectingState = 1;
   // Perform any additional actions you need
   // Sending a message to content.js
   //chrome.runtime.sendMessage({ action: "executeFunction" });
-  function openURL(url) {
-    chrome.tabs.update({ url, active: false });
-  }
-  wasPressed.push(true)
+  //function openURL(url) {
+  //  chrome.tabs.update({ url, active: false });
+  //}
   // Example usage
-  const targetURL = 'https://www.example.com';
+  //const targetURL = 'https://www.example.com';
   //openURL(targetURL);
   //openURL(targetURL);
   //openURL(targetURL);
@@ -54,8 +55,34 @@ function myFunction() {
 
 // Listen for messages from the content script
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.status === "loaded" && wasPressed[wasPressed.length - 1] === true) {
-    console.log("Page loaded!");
+  if (message.status === "loaded") {
+    function goForward() {
+      chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.forwardLink, active: false });
+    }
+    function goBack() {
+      chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.backLink, active: false });
+    }
+    console.log("Page loaded!", message);
+    
+    switch (collectingState) {
+      case 0: // idle
+        break;
+
+      case 1: // looking for end/empty
+        if (message.empty) {
+          collectingState = 2;
+          pagesCollected = 0;
+          goBack();
+        } else goForward();
+        break;
+
+      case 2: // getting last 4
+        //collectedData.push(message.data);       <------------------------
+        if (++pagesCollected < 4) goBack();
+        else collectingState = 0;
+
+
+    /*
 
     var forward = message.forwardLink;
     console.log(wasPressed[wasPressed.length - 1]);
@@ -66,9 +93,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     openURL('https://e-journal.iea.gov.ua' + forward);
 
+    */
 
-
-
+    }
   }
 });
 

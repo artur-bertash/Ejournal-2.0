@@ -172,15 +172,117 @@ function init() {
   if (element) {
     element.appendChild(tag);
   }
+  const addClock = () => {
+    console.log('addClock')
+    let overlay = document.querySelector('.easyIt-ext')
+    if (!overlay) {
+      overlay = document.createElement('div')
+      overlay.setAttribute('class', 'easyIt-ext')
+    }
 
+    overlay.innerHTML = `
+          <div class="easyIt-data"></div>
+    `
+
+    const style = document.createElement('style')
+    style.textContent = `
+        .easyIt-ext{
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        pointer-events: none;
+        background: linear-gradient(0deg, rgba(0,0,0, 0.3) 0%, rgba(0,0,0,0) 100%);
+        z-index: 1000;
+        }
+
+        .easyIt-data{
+          font-size: 50px;
+          pointer-events: none;
+          color: #fff;
+          padding: 50px;
+        }
+    `
+    const body = document.querySelector('body')
+    body.appendChild(overlay)
+    body.appendChild(style)
+
+    intervalId = setInterval(() => {
+      const data = document.querySelector('.easyIt-data')
+      if (data) {
+        const d = new Date()
+        const hours = `${d.getHours()}`
+        const mins = `${d.getMinutes()}`
+        const secs = `${d.getSeconds()}`
+
+        data.textContent = `${hours.padStart(2, '0')}:${mins.padStart(2, '0')}:${secs.padStart(2, '0')}`
+      }
+    }, 1000)
+  }
+
+  const removeClock = () => {
+    clearInterval(intervalId)
+    const content = document.querySelector('.easyIt-ext')
+    if (content) {
+      content.parentNode.removeChild(content)
+    }
+  }
+  // Listen for messages from background.js
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.addOverlay == "Add overlay") {
+      // Create a new div element
+      var box = document.createElement('div');
+
+      box.style.width = '400px';
+      box.style.height = '200px';
+      box.style.backgroundColor = 'rgba(211, 211, 211, 0.9)';
+      box.style.position = 'fixed';
+      box.style.top = '50%';
+      box.style.left = '50%';
+      box.style.transform = 'translate(-50%, -50%)';
+      box.style.display = 'flex';
+      box.style.flexDirection = 'column';
+      box.style.justifyContent = 'center';
+      box.style.alignItems = 'center';
+      box.style.borderRadius = '10px';
+      box.style.padding = '20px';
+
+      var mainText = document.createElement('span');
+      mainText.textContent = 'Збирання даних з сайту';
+      mainText.style.fontFamily = 'Arial';
+      mainText.style.fontSize = '24px';
+      mainText.style.textAlign = 'center';
+      mainText.style.marginBottom = '10px';
+
+      var additionalText = document.createElement('span');
+      additionalText.textContent = 'Будь ласка, не переключайте сторінки';
+      additionalText.style.fontFamily = 'Arial';
+      additionalText.style.fontSize = '18px';
+      additionalText.style.textAlign = 'center';
+
+      box.appendChild(mainText);
+      box.appendChild(additionalText);
+
+      // Append the box to the body or any other element you wish
+      document.body.appendChild(box);
+
+
+
+    }
+  });
 
   const onClick = () => {
 
 
     // Sending a message from content.js
     chrome.runtime.sendMessage({ message: "The smart-button was pressed" });
-    //window.open(goForwardBack()[1], '_blank');
-    setTimeout(() => window.location.reload(), 50);
+
+    //addClock();
+    setTimeout(() => window.location.reload(), 50); //turn back on 
     isNone()
 
 

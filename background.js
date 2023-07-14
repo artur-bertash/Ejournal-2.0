@@ -10,10 +10,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 function parseDate(string) {
   const [day, monthName] = string.trim().slice(string.indexOf(' ') + 1).split(' ');
   const month = [
-      "січня" , "лютого"   , "березня",
-      "квітня", "травня"   , "червня",
-      "липня" , "серпня"   , "вересня",
-      "жовтня", "листопада", "грудня",
+    "січня", "лютого", "березня",
+    "квітня", "травня", "червня",
+    "липня", "серпня", "вересня",
+    "жовтня", "листопада", "грудня",
   ].indexOf(monthName) + 1;
   return month == 0 ? "err" : `${day.padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
 }
@@ -84,12 +84,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.backLink, active: false });
     }
 
+    console.log('reloaded')
 
     switch (collectingState) {
       case "idle":
         break;
 
       case "initializing":
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, { addOverlay: "Add overlay" });
+        });
         if (message.empty) {
           collectingState = "going backward";
           goBack();
@@ -97,9 +101,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           collectingState = "going forward";
           goForward();
         }
+
         break;
 
       case "going forward":
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, { addOverlay: "Add overlay" });
+        });
         if (message.empty) {
           collectingState = "collecting";
           pagesCollected = 0;
@@ -131,32 +139,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         }
         collectedWeeks.push(message.data);
         goBack();
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, { addOverlay: "Add overlay" });
+        });
 
     }
 
-      /*
-  
-      var forward = message.forwardLink;
-      console.log(wasPressed[wasPressed.length - 1]);
-  
-      function openURL(url) {
-        chrome.tabs.update({ url: url, active: false });
-      }
-  
-      openURL('https://e-journal.iea.gov.ua' + forward);
-  
-      */
-/*
-    }
-    if (collectedData.length === 4) {
-      console.log(collectedData);
-      console.log(collectedDataRes)
 
-      collectedDataRes.push(collectedData);
-      collectedData = [];
-
-    }
-*/
   }
 });
 

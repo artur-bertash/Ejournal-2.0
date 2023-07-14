@@ -1,3 +1,19 @@
+/**
+ * @typedef {Object | "none"} AppraisalData
+ * @property {string} grade
+ * @property {string} type
+ * @property {string} comment
+ *
+ * @typedef {Object} Subject
+ * @property {number} number
+ * @property {string} name
+ * @property {string} homework
+ * @property {AppraisalData} appraisal
+ * 
+ * @typedef {Object} Day
+ * @property {string} date
+ * @property {Subject[]} subjects
+ */
 
 chrome.runtime.onInstalled.addListener(async () => {
   let url = chrome.runtime.getURL("hello.html");
@@ -59,24 +75,16 @@ function myFunction() {
 }
 
 
-//loadconfig: function() {
-//ar xhr = new XMLHttpRequest();
-//xhr.onreadystatechange = function () {
-//if (xhr.readyState === 4) {
-//console.log('we got the file', xhr.response);
-//}
-//};
-//xhr.open('GET', chrome.extension.getURL('diary.json'), true)
-//}
-
-
-
-
 
 
 // Listen for messages from the content script
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.status === "loaded") {
+    /**
+     * @type {Day[]}
+     */
+    let days = message.data;
+  
     function goForward() {
       chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.forwardLink, active: false });
     }
@@ -115,21 +123,25 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         collectingState = "collecting";
 
       case "collecting":
-        if (message.empty && parseDate(message.data[0][0])[4] == '8') {
+        if (message.empty && days[0].date[4] == '8') {
+        //if (++temp == 6) {
           collectingState = "idle";
           collectedMonths = [];
-          let currentMonth = [];
+          let currentMonth = [], weeksCollected = 0;
           while (collectedWeeks.length) {
-            currentMonth.push(collectedWeeks.pop());
-            if (currentMonth.length >= 4) {
+            collectedWeeks.pop().forEach(day => currentMonth.push(day));
+            if (++weeksCollected >= 4) {
               collectedMonths.push(currentMonth);
               currentMonth = [];
+              weeksCollected = 0;
             }
           }
           if (currentMonth.length) collectedMonths.push(currentMonth);
+          temp = 0
+          chrome.tabs.create({ url: chrome.runtime.getURL('diary.html') });
           break;
         }
-        collectedWeeks.push(message.data);
+        collectedWeeks.push(days);
         goBack();
 
     }
@@ -158,6 +170,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
 */
   }
+  if (message.status == "loadedDiary") {
+    if (sender.origin && sender.origin.slice(19) == chrome.runtime.id) sendResponse({
+      data: collectedMonths,
+      dataType: "months",
+    });
+  }
 });
 
-
+var temp = 0

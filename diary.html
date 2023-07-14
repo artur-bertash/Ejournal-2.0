@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<meta charset="UTF-8">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <title>Ejournal 2.0</title>
     <style>
         body {
@@ -87,12 +85,12 @@
 
         <div class="content">
             <div class="right-left-button">
-                <button id="button-left"></button>
-                <button id="button-right"></button>
+                <input id="button-left"  type="button" value="&#11013;">
+                <input id="button-right" type="button" value="&#10145;">
             </div>
 
             <table>
-                <thead>
+                <thead><!--
                     <tr>
                         <th>Номер</th>
                         <th>Предмет</th>
@@ -125,11 +123,11 @@
                         <th>01/03</th>
                         <th>01/03</th>
                         <th>01/02</th>
-
-                        <!-- Add more header columns as needed -->
                     </tr>
+                    
+                -->
                 </thead>
-                <tbody>
+                <tbody><!-- 
                     <tr>
                         <td>1</td>
                         <td>Математика</td>
@@ -162,21 +160,14 @@
                         <td>11</td>
                         <td>12</td>
                         <td>11</td>
-
-                        <!-- Add more data cells as needed -->
                     </tr>
-
-
-                    </tr>
+                    
+                        -->
                 </tbody>
             </table>
         </div>
     </div>
-    <script>
-        $("#button-right").html("&#10145;");
-        $("#button-left").html("&#11013;");
-
-    </script>
+    <script src = "content.js"></script>
 </body>
 
 </html>

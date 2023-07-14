@@ -10,8 +10,12 @@ chrome.runtime.onInstalled.addListener(async () => {
 var collectingState = 0; // 0=idle   1=looking for end/empty   2=getting last 4
 var pagesCollected = 0;
 var collectedDataRes = []
-const collectedData = []
+var collectedData = []
 
+
+function isListIn2DArray(list, array2D) {
+  return array2D.some(row => row.length === list.length && row.every((value, index) => value === list[index]));
+}
 // Listening for messages in background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.message === "The smart-button was pressed") {
@@ -100,6 +104,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
     if (collectedData.length === 4) {
       console.log(collectedData);
+      console.log(collectedDataRes)
+
+      collectedDataRes.push(collectedData);
+      collectedData = [];
+
     }
 
   }

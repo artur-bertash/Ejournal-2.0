@@ -154,7 +154,7 @@ window.addEventListener("load", function () {
     backLink: goForwardBack()[0],
     forwardLink: goForwardBack()[1],
     empty: isNone() == "empty",
-    data: JSON.stringify(res, null, 2),
+    data: res,
   });
 });
 

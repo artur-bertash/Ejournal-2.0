@@ -7,10 +7,24 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 });
 
-var collectingState = 0; // 0=idle   1=looking for end/empty   2=getting last 4
+function parseDate(string) {
+  const [day, monthName] = string.trim().slice(string.indexOf(' ') + 1).split(' ');
+  const month = [
+      "січня" , "лютого"   , "березня",
+      "квітня", "травня"   , "червня",
+      "липня" , "серпня"   , "вересня",
+      "жовтня", "листопада", "грудня",
+  ].indexOf(monthName) + 1;
+  return month == 0 ? "err" : `${day.padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
+}
+
+/**
+ * @type {"idle" | "initializing" | "going forward" | "going backward" | "collecting"}
+ */
+var collectingState = "idle";
 var pagesCollected = 0;
-var collectedDataRes = []
-var collectedData = []
+var collectedMonths = [];
+var collectedWeeks = [];
 
 
 function isListIn2DArray(list, array2D) {
@@ -26,8 +40,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 function myFunction() {
   // Your code here
+  if (collectingState != "idle") return;
   console.log("The function starts to work");
-  collectingState = 1;
+  collectingState = "initializing";
   // Perform any additional actions you need
   // Sending a message to content.js
   //chrome.runtime.sendMessage({ action: "executeFunction" });
@@ -71,22 +86,53 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
     switch (collectingState) {
-      case 0: // idle
+      case "idle":
         break;
 
-      case 1: // looking for end/empty
+      case "initializing":
         if (message.empty) {
-          collectingState = 2;
+          collectingState = "going backward";
+          goBack();
+        } else {
+          collectingState = "going forward";
+          goForward();
+        }
+        break;
+
+      case "going forward":
+        if (message.empty) {
+          collectingState = "collecting";
           pagesCollected = 0;
           goBack();
         } else goForward();
         break;
 
-      case 2: // getting last 4
-        collectedData.push(JSON.parse(message.data));
-        if (++pagesCollected < 4) goBack();
-        else collectingState = 0;
+      case "going backward":
+        if (message.empty) {
+          goBack();
+          break;
+        }
+        collectingState = "collecting";
 
+      case "collecting":
+        if (message.empty && parseDate(message.data[0][0])[4] == '8') {
+          collectingState = "idle";
+          collectedMonths = [];
+          let currentMonth = [];
+          while (collectedWeeks.length) {
+            currentMonth.push(collectedWeeks.pop());
+            if (currentMonth.length >= 4) {
+              collectedMonths.push(currentMonth);
+              currentMonth = [];
+            }
+          }
+          if (currentMonth.length) collectedMonths.push(currentMonth);
+          break;
+        }
+        collectedWeeks.push(message.data);
+        goBack();
+
+    }
 
       /*
   
@@ -100,7 +146,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       openURL('https://e-journal.iea.gov.ua' + forward);
   
       */
-
+/*
     }
     if (collectedData.length === 4) {
       console.log(collectedData);
@@ -110,7 +156,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       collectedData = [];
 
     }
-
+*/
   }
 });
 

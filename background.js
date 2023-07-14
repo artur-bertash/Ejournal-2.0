@@ -9,7 +9,9 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 var collectingState = 0; // 0=idle   1=looking for end/empty   2=getting last 4
 var pagesCollected = 0;
+var collectedDataRes = []
 const collectedData = []
+
 // Listening for messages in background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.message === "The smart-button was pressed") {
@@ -62,8 +64,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     function goBack() {
       chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.backLink, active: false });
     }
-    console.log("Page loaded!", message);
-    
+
+
     switch (collectingState) {
       case 0: // idle
         break;
@@ -77,29 +79,30 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         break;
 
       case 2: // getting last 4
-        //collectedData.push(message.data);       <------------------------
+        collectedData.push(JSON.parse(message.data));
         if (++pagesCollected < 4) goBack();
         else collectingState = 0;
 
 
-    /*
+      /*
+  
+      var forward = message.forwardLink;
+      console.log(wasPressed[wasPressed.length - 1]);
+  
+      function openURL(url) {
+        chrome.tabs.update({ url: url, active: false });
+      }
+  
+      openURL('https://e-journal.iea.gov.ua' + forward);
+  
+      */
 
-    var forward = message.forwardLink;
-    console.log(wasPressed[wasPressed.length - 1]);
-
-    function openURL(url) {
-      chrome.tabs.update({ url: url, active: false });
+    }
+    if (collectedData.length === 4) {
+      console.log(collectedData);
     }
 
-    openURL('https://e-journal.iea.gov.ua' + forward);
-
-    */
-
-    }
   }
 });
-
-
-
 
 

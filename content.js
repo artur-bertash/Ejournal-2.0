@@ -67,13 +67,16 @@ function parseTable(table) {
 }
 
 
-function parseDate(table) {
+function parseDate(t) {
+  var tables = document.querySelectorAll('.diary-thead-date');
+  var dates = [];
 
-  var element = document.querySelector('.diary-thead-date');
-  return element.innerText
+  tables.forEach(function (table) {
+    var dateText = table.textContent.trim();
+    dates.push(dateText);
+  });
 
-
-
+  return dates;
 }
 
 function isNone() {
@@ -119,14 +122,39 @@ function goForwardBack() {
   return reslinks;
 }
 
+function mergeLists(list1, list2) {
+  const mergedList = [];
+  const maxLength = Math.max(list1.length, list2.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    mergedList.push([list1[i], list2[i]]);
+  }
+
+  return mergedList;
+}
+
 window.addEventListener("load", function () {
+  const tables = document.querySelectorAll('.diary.table');
+
+  // Define an array to store the parsed data from all tables
+  const parsedData = [];
+
+  var parsedDates = parseDate(tables);
+  // Iterate over each table and call the parseTable function to extract the data
+  tables.forEach(table => {
+    const parsedTableData = parseTable(table);
+
+    parsedData.push(parsedTableData);
+  });
+
+  const res = mergeLists(parsedDates, parsedData);
 
   chrome.runtime.sendMessage({
     status: "loaded",
     backLink: goForwardBack()[0],
     forwardLink: goForwardBack()[1],
     empty: isNone() == "empty",
-    //data: parseData(),       <------------------------
+    data: JSON.stringify(res, null, 2),
   });
 });
 
@@ -176,17 +204,20 @@ function init() {
 
     // Define an array to store the parsed data from all tables
     const parsedData = [];
+    var dates = []
 
 
     // Iterate over each table and call the parseTable function to extract the data
     tables.forEach(table => {
       const parsedTableData = parseTable(table);
       const parsedDates = parseDate(table);
-      parsedData.push([parsedDates, parsedTableData]);
+      parsedData.push(parsedTableData);
+      dates.push(parsedDates)
 
 
 
     });
+
 
 
 

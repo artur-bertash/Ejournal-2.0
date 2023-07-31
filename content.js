@@ -31,34 +31,30 @@ function parseTable(table) {
   const headers = Array.from(table.querySelectorAll('thead tr td'));
   const rows = Array.from(table.querySelectorAll('tbody tr'));
 
-  // Create an array to store the parsed data
   const data = [];
 
-  // Function to parse the appraisal data from the modal body
   function parseAppraisalData(modalBody) {
-    const appraisalData = {};
+    const appraisalData = [];
     const paragraphs = Array.from(modalBody.querySelectorAll('p'));
     paragraphs.forEach((p) => {
       const parts = p.textContent.split(':');
       if (parts.length === 2) {
         const key = parts[0].trim();
-        const value = parts[1].trim(); // to consider: може бути проблема з коментарями, якщо в якомусь виявиться двокрапка
-        appraisalData[{
-          "Оцінка"  : "grade",
-          "Тип"     : "type",
+        const value = parts[1].trim();
+        appraisalData.push({
+          "Оцінка": "grade",
+          "Тип": "type",
           "Коментар": "comment",
-        }[key]] = value;
+        }[key] + ": " + value);
       }
     });
     return appraisalData;
   }
 
-  // Loop through each row and extract the data
   rows.forEach((row) => {
     const rowData = {};
     const cells = Array.from(row.querySelectorAll('td'));
 
-    // Loop through each cell and map the data to the corresponding header
     cells.forEach((cell, index) => {
       const header = headers[index].classList.contains('number')
         ? 'number'
@@ -71,19 +67,22 @@ function parseTable(table) {
               : '';
 
       if (header === 'appraisal') {
-        // Extract the appraisal data from the modal body
-        const modalBody = cell.querySelector('.modal-body'); // to consider: може бути кілька оцінок (31 травня)
-        if (modalBody) {
-          rowData.appraisal = parseAppraisalData(modalBody);
+        const modalBodies = cell.querySelectorAll('.modal-body');
+        if (modalBodies.length > 0) {
+          const appraisals = [];
+          modalBodies.forEach((modalBody) => {
+            const appraisalData = parseAppraisalData(modalBody);
+            appraisals.push(appraisalData);
+          });
+          rowData.appraisal = appraisals;
         } else {
-          rowData.appraisal = "none";
+          rowData.appraisal = [];
         }
       } else {
         rowData[header] = cell.textContent.trim();
       }
     });
 
-    // Add the parsed data for the current row to the data array
     if (rowData.name.trim().length) data.push(rowData);
   });
 
@@ -94,13 +93,14 @@ function parseTable(table) {
   };
 }
 
+
 function parseDate(string) {
   const [day, monthName] = string.trim().slice(string.indexOf(' ') + 1).split(' ');
   const month = [
-      "січня" , "лютого"   , "березня",
-      "квітня", "травня"   , "червня",
-      "липня" , "серпня"   , "вересня",
-      "жовтня", "листопада", "грудня",
+    "січня", "лютого", "березня",
+    "квітня", "травня", "червня",
+    "липня", "серпня", "вересня",
+    "жовтня", "листопада", "грудня",
   ].indexOf(monthName) + 1;
   return month == 0 ? "err" : `${day.padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
 }
@@ -176,7 +176,7 @@ function mergeLists(list1, list2) {
 }
 
 window.addEventListener("load", function () {
-  
+
   if (document.URL.includes("diary.html")) {
 
 
@@ -187,8 +187,8 @@ window.addEventListener("load", function () {
       months = message.data;
       page = months.length - 1;
       createTable(page);
-      document.querySelector('#button-left' ).onclick = buttonPreviousMonth; 
-      document.querySelector('#button-right').onclick = buttonNextMonth; 
+      document.querySelector('#button-left').onclick = buttonPreviousMonth;
+      document.querySelector('#button-right').onclick = buttonNextMonth;
     });
 
     return
@@ -196,20 +196,20 @@ window.addEventListener("load", function () {
   }
   const tables = Array.from(document.querySelectorAll('.diary.table'));
   const days = tables.map(parseTable).filter(day => (!['субота', 'неділя'].includes(day.rawDate.split(',')[0])) || day.subjects.length > 0);
-/*
-  // Define an array to store the parsed data from all tables
-  const parsedData = [];
-
-  var parsedDates = parseDate(tables);
-  // Iterate over each table and call the parseTable function to extract the data
-  tables.forEach(table => {
-    const parsedTableData = parseTable(table);
-
-    parsedData.push(parsedTableData);
-  });
-
-  const res = mergeLists(parsedDates, parsedData);
-*/
+  /*
+    // Define an array to store the parsed data from all tables
+    const parsedData = [];
+  
+    var parsedDates = parseDate(tables);
+    // Iterate over each table and call the parseTable function to extract the data
+    tables.forEach(table => {
+      const parsedTableData = parseTable(table);
+  
+      parsedData.push(parsedTableData);
+    });
+  
+    const res = mergeLists(parsedDates, parsedData);
+  */
   chrome.runtime.sendMessage({
     status: "loaded",
     backLink: goForwardBack()[0],
@@ -257,43 +257,43 @@ function init() {
 
 
 
-/*
-
-
-    const tables = document.querySelectorAll('.diary.table');
-
-
-    // Define an array to store the parsed data from all tables
-    const parsedData = [];
-    var dates = []
-
-
-    // Iterate over each table and call the parseTable function to extract the data
-    tables.forEach(table => {
-      const parsedTableData = parseTable(table);
-      const parsedDates = parseDate(table);
-      parsedData.push(parsedTableData);
-      dates.push(parsedDates)
-
-
-
-    });
-
-
-
-
-
-    // Output the parsed data
-    console.log(JSON.stringify(parsedData, null, 2));
-
-    tag.innerText = JSON.stringify(parsedData, null, 2);
-
-
-
-
-
-
-*/
+    /*
+    
+    
+        const tables = document.querySelectorAll('.diary.table');
+    
+    
+        // Define an array to store the parsed data from all tables
+        const parsedData = [];
+        var dates = []
+    
+    
+        // Iterate over each table and call the parseTable function to extract the data
+        tables.forEach(table => {
+          const parsedTableData = parseTable(table);
+          const parsedDates = parseDate(table);
+          parsedData.push(parsedTableData);
+          dates.push(parsedDates)
+    
+    
+    
+        });
+    
+    
+    
+    
+    
+        // Output the parsed data
+        console.log(JSON.stringify(parsedData, null, 2));
+    
+        tag.innerText = JSON.stringify(parsedData, null, 2);
+    
+    
+    
+    
+    
+    
+    */
 
 
     //location.href = ('http://diary-pro.zzz.com.ua/#');
@@ -309,16 +309,19 @@ init();
 /**
  * @type {Day[][]}
  */
-var months = [];
-var page = 0;
+// Define the months array (you can update it with the correct month names)
+const months = [];
+
+// Define the page variable to keep track of the current month index
+let page = 0;
 
 function createTable(monthIndex) {
   if (document.URL.includes("e-journal")) {
-    return
+    return;
   }
 
-  const days = months[monthIndex] ?? "throw";
-  if (days == "throw") return;
+  const days = months[monthIndex];
+  if (!days) return;
 
   function createAndAppend(parent, type) {
     const element = document.createElement(type);
@@ -353,7 +356,12 @@ function createTable(monthIndex) {
       const tr = subjectRowMap.get(subject.name);
       if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
       const td = createAndAppend(tr, 'td');
-      if (subject.appraisal != "none") td.innerHTML = subject.appraisal.grade;
+
+      if (subject.appraisal === "none") {
+        td.innerHTML = "none";
+      } else if (typeof subject.appraisal === "object") {
+        td.innerHTML = subject.appraisal.grade;
+      }
       rowsProcessed.push(tr);
     });
     subjectRowMap.forEach(row => {
@@ -369,6 +377,7 @@ function buttonPreviousMonth() {
 function buttonNextMonth() {
   if (page < months.length - 1) createTable(++page);
 }
+
 
 function replaceImg() {
   if (document.URL.includes("diary.html")) {

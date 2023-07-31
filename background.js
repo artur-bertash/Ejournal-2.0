@@ -15,6 +15,8 @@
  * @property {Subject[]} subjects
  */
 
+
+
 chrome.runtime.onInstalled.addListener(async () => {
   let url = chrome.runtime.getURL("hello.html");
   let tab = await chrome.tabs.create({ url });
@@ -26,10 +28,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 function parseDate(string) {
   const [day, monthName] = string.trim().slice(string.indexOf(' ') + 1).split(' ');
   const month = [
-      "січня" , "лютого"   , "березня",
-      "квітня", "травня"   , "червня",
-      "липня" , "серпня"   , "вересня",
-      "жовтня", "листопада", "грудня",
+    "січня", "лютого", "березня",
+    "квітня", "травня", "червня",
+    "липня", "серпня", "вересня",
+    "жовтня", "листопада", "грудня",
   ].indexOf(monthName) + 1;
   return month == 0 ? "err" : `${day.padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
 }
@@ -74,8 +76,35 @@ function myFunction() {
 
 }
 
+// background.js
+// background.js
+
+// Function to check if the current URL contains "youtube"
+function checkForYouTubeURL(url) {
+  return url.includes('e-journal.iea.gov.ua');
+}
+var ischanged = []
+
+function getCurrentURL() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs && tabs.length > 0) {
+      const currentURL = tabs[0].url;
+      console.log('Current URL:', currentURL);
+
+      if (checkForYouTubeURL(currentURL)) {
+        ischanged.push(false)
+
+      } else {
+        ischanged.push(true)
+
+      }
+    }
+  });
+}
 
 
+
+let activeTabId = -1;
 
 // Listen for messages from the content script
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -84,7 +113,19 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
      * @type {Day[]}
      */
     let days = message.data;
-  
+    getCurrentURL()
+    console.log(ischanged)
+    if (ischanged[ischanged.length - 1] == true) {
+      ischanged = []            // not sure if this resets the whole thing
+      collectingState = "idle";// not sure if this resets the whole thing
+      pagesCollected = 0;// not sure if this resets the whole thing
+      collectedMonths = [];// not sure if this resets the whole thing
+      collectedWeeks = [];// not sure if this resets the whole thing
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { violation: "violation" });
+      });
+      return
+    }
     function goForward() {
       chrome.tabs.update({ url: 'https://e-journal.iea.gov.ua' + message.forwardLink, active: false });
     }
@@ -124,7 +165,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
       case "collecting":
         if (message.empty && days[0].date[4] == '8') {
-        //if (++temp == 6) {
+          //if (++temp == 6) {
           collectingState = "idle";
           collectedMonths = [];
           let currentMonth = [], weeksCollected = 0;
@@ -146,29 +187,29 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     }
 
-      /*
-  
-      var forward = message.forwardLink;
-      console.log(wasPressed[wasPressed.length - 1]);
-  
-      function openURL(url) {
-        chrome.tabs.update({ url: url, active: false });
-      }
-  
-      openURL('https://e-journal.iea.gov.ua' + forward);
-  
-      */
-/*
+    /*
+ 
+    var forward = message.forwardLink;
+    console.log(wasPressed[wasPressed.length - 1]);
+ 
+    function openURL(url) {
+      chrome.tabs.update({ url: url, active: false });
     }
-    if (collectedData.length === 4) {
-      console.log(collectedData);
-      console.log(collectedDataRes)
-
-      collectedDataRes.push(collectedData);
-      collectedData = [];
-
-    }
-*/
+ 
+    openURL('https://e-journal.iea.gov.ua' + forward);
+ 
+    */
+    /*
+        }
+        if (collectedData.length === 4) {
+          console.log(collectedData);
+          console.log(collectedDataRes)
+    
+          collectedDataRes.push(collectedData);
+          collectedData = [];
+    
+        }
+    */
   }
   if (message.status == "loadedDiary") {
     if (sender.origin && sender.origin.slice(19) == chrome.runtime.id) sendResponse({

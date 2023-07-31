@@ -31,30 +31,34 @@ function parseTable(table) {
   const headers = Array.from(table.querySelectorAll('thead tr td'));
   const rows = Array.from(table.querySelectorAll('tbody tr'));
 
+  // Create an array to store the parsed data
   const data = [];
 
+  // Function to parse the appraisal data from the modal body
   function parseAppraisalData(modalBody) {
-    const appraisalData = [];
+    const appraisalData = {};
     const paragraphs = Array.from(modalBody.querySelectorAll('p'));
     paragraphs.forEach((p) => {
       const parts = p.textContent.split(':');
       if (parts.length === 2) {
         const key = parts[0].trim();
-        const value = parts[1].trim();
-        appraisalData.push({
+        const value = parts[1].trim(); // to consider: може бути проблема з коментарями, якщо в якомусь виявиться двокрапка
+        appraisalData[{
           "Оцінка": "grade",
           "Тип": "type",
           "Коментар": "comment",
-        }[key] + ": " + value);
+        }[key]] = value;
       }
     });
     return appraisalData;
   }
 
+  // Loop through each row and extract the data
   rows.forEach((row) => {
     const rowData = {};
     const cells = Array.from(row.querySelectorAll('td'));
 
+    // Loop through each cell and map the data to the corresponding header
     cells.forEach((cell, index) => {
       const header = headers[index].classList.contains('number')
         ? 'number'
@@ -67,22 +71,19 @@ function parseTable(table) {
               : '';
 
       if (header === 'appraisal') {
-        const modalBodies = cell.querySelectorAll('.modal-body');
-        if (modalBodies.length > 0) {
-          const appraisals = [];
-          modalBodies.forEach((modalBody) => {
-            const appraisalData = parseAppraisalData(modalBody);
-            appraisals.push(appraisalData);
-          });
-          rowData.appraisal = appraisals;
+        // Extract the appraisal data from the modal body
+        const modalBody = cell.querySelector('.modal-body'); // to consider: може бути кілька оцінок (31 травня)
+        if (modalBody) {
+          rowData.appraisal = parseAppraisalData(modalBody);
         } else {
-          rowData.appraisal = [];
+          rowData.appraisal = "none";
         }
       } else {
         rowData[header] = cell.textContent.trim();
       }
     });
 
+    // Add the parsed data for the current row to the data array
     if (rowData.name.trim().length) data.push(rowData);
   });
 
@@ -92,7 +93,6 @@ function parseTable(table) {
     subjects: data,
   };
 }
-
 
 function parseDate(string) {
   const [day, monthName] = string.trim().slice(string.indexOf(' ') + 1).split(' ');
@@ -309,19 +309,16 @@ init();
 /**
  * @type {Day[][]}
  */
-// Define the months array (you can update it with the correct month names)
-const months = [];
-
-// Define the page variable to keep track of the current month index
-let page = 0;
+var months = [];
+var page = 0;
 
 function createTable(monthIndex) {
   if (document.URL.includes("e-journal")) {
-    return;
+    return
   }
 
-  const days = months[monthIndex];
-  if (!days) return;
+  const days = months[monthIndex] ?? "throw";
+  if (days == "throw") return;
 
   function createAndAppend(parent, type) {
     const element = document.createElement(type);
@@ -356,12 +353,7 @@ function createTable(monthIndex) {
       const tr = subjectRowMap.get(subject.name);
       if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
       const td = createAndAppend(tr, 'td');
-
-      if (subject.appraisal === "none") {
-        td.innerHTML = "none";
-      } else if (typeof subject.appraisal === "object") {
-        td.innerHTML = subject.appraisal.grade;
-      }
+      if (subject.appraisal != "none") td.innerHTML = subject.appraisal.grade;
       rowsProcessed.push(tr);
     });
     subjectRowMap.forEach(row => {
@@ -377,7 +369,6 @@ function buttonPreviousMonth() {
 function buttonNextMonth() {
   if (page < months.length - 1) createTable(++page);
 }
-
 
 function replaceImg() {
   if (document.URL.includes("diary.html")) {
@@ -434,23 +425,69 @@ Theme();
 
 //const smartButton = document.querySelector('.smart-button')sd sd sd
 //if (smartButton) {
- // smartButton.addEventListener('click', onClick)
+// smartButton.addEventListener('click', onClick)
 ////}
 
 //const onClick = async (e) => {
- // let queryOptions = { active: true, lastFocusedWindow: true };        sdfsfsdf
-  //const [tab] = await chrome.tabs.query(queryOptions)
-  //chrome.tabs.remove(tab.id)
+// let queryOptions = { active: true, lastFocusedWindow: true };        sdfsfsdf
+//const [tab] = await chrome.tabs.query(queryOptions)
+//chrome.tabs.remove(tab.id)
 //}
 
 
 
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.violation == "violation") {
+    // Create a new div element
+    var box = document.createElement('div');
+
+    box.style.width = '400px';
+    box.style.height = '200px';
+    box.style.backgroundColor = 'rgba(211, 211, 211, 0.9)';
+    box.style.position = 'fixed';
+    box.style.top = '50%';
+    box.style.left = '50%';
+    box.style.transform = 'translate(-50%, -50%)';
+    box.style.display = 'flex';
+    box.style.flexDirection = 'column';
+    box.style.justifyContent = 'center';
+    box.style.alignItems = 'center';
+    box.style.borderRadius = '10px';
+    box.style.padding = '20px';
+
+    var mainText = document.createElement('span');
+    mainText.textContent = 'Ви переключили вебсайт';
+    mainText.style.fontFamily = 'Arial';
+    mainText.style.fontSize = '24px';
+    mainText.style.textAlign = 'center';
+    mainText.style.marginBottom = '10px';
+
+    var additionalText = document.createElement('span');
+    additionalText.textContent = 'Ви можете продовжувати використовувати програму';
+    additionalText.style.fontFamily = 'Arial';
+    additionalText.style.fontSize = '18px';
+    additionalText.style.textAlign = 'center';
+
+    box.appendChild(mainText);
+    box.appendChild(additionalText);
+
+    // Append the box to the body or any other element you wish
+
+    //var gifContainer = document.createElement("div");
+    //gifContainer.id = "gifContainer";
+    //box.appendChild(gifContainer);
+
+    // Create an image element
+    //var gifImage = new Image();
+
+    // Set the source of the image to the GIF file
+    //gifImage.src = "https://media0.giphy.com/media/rInIhIS9AYCrojSh3v/giphy.gif?cid=ecf05e478bvh7beb7ksx4c3b9tp7uzkeb0oqaaeqsrc5ofkl&ep=v1_gifs_search&rid=giphy.gif&ct=g";
+
+    // Append the GIF image to the container
+    //gifContainer.appendChild(gifImage);
 
 
 
-
-
-
-
-
-
+    document.body.appendChild(box)
+  }
+});

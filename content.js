@@ -31,34 +31,30 @@ function parseTable(table) {
   const headers = Array.from(table.querySelectorAll('thead tr td'));
   const rows = Array.from(table.querySelectorAll('tbody tr'));
 
-  // Create an array to store the parsed data
   const data = [];
 
-  // Function to parse the appraisal data from the modal body
   function parseAppraisalData(modalBody) {
-    const appraisalData = {};
+    const appraisalData = [];
     const paragraphs = Array.from(modalBody.querySelectorAll('p'));
     paragraphs.forEach((p) => {
       const parts = p.textContent.split(':');
       if (parts.length === 2) {
         const key = parts[0].trim();
-        const value = parts[1].trim(); // to consider: може бути проблема з коментарями, якщо в якомусь виявиться двокрапка
-        appraisalData[{
+        const value = parts[1].trim();
+        appraisalData.push({
           "Оцінка": "grade",
           "Тип": "type",
           "Коментар": "comment",
-        }[key]] = value;
+        }[key] + ": " + value);
       }
     });
     return appraisalData;
   }
 
-  // Loop through each row and extract the data
   rows.forEach((row) => {
     const rowData = {};
     const cells = Array.from(row.querySelectorAll('td'));
 
-    // Loop through each cell and map the data to the corresponding header
     cells.forEach((cell, index) => {
       const header = headers[index].classList.contains('number')
         ? 'number'
@@ -71,19 +67,22 @@ function parseTable(table) {
               : '';
 
       if (header === 'appraisal') {
-        // Extract the appraisal data from the modal body
-        const modalBody = cell.querySelector('.modal-body'); // to consider: може бути кілька оцінок (31 травня)
-        if (modalBody) {
-          rowData.appraisal = parseAppraisalData(modalBody);
+        const modalBodies = cell.querySelectorAll('.modal-body');
+        if (modalBodies.length > 0) {
+          const appraisals = [];
+          modalBodies.forEach((modalBody) => {
+            const appraisalData = parseAppraisalData(modalBody);
+            appraisals.push(appraisalData);
+          });
+          rowData.appraisal = appraisals;
         } else {
-          rowData.appraisal = "none";
+          rowData.appraisal = [];
         }
       } else {
         rowData[header] = cell.textContent.trim();
       }
     });
 
-    // Add the parsed data for the current row to the data array
     if (rowData.name.trim().length) data.push(rowData);
   });
 
@@ -353,7 +352,16 @@ function createTable(monthIndex) {
       const tr = subjectRowMap.get(subject.name);
       if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
       const td = createAndAppend(tr, 'td');
-      if (subject.appraisal != "none") td.innerHTML = subject.appraisal.grade;
+      if (subject.appraisal != []) {
+        const grades = [];
+        subject.appraisal.forEach(item => {
+          const grade = item.find(info => info.startsWith("grade: "));
+          if (grade) {
+            grades.push(grade.split(": ")[1]);
+          }
+        });
+        td.innerHTML = grades
+      }
       rowsProcessed.push(tr);
     });
     subjectRowMap.forEach(row => {

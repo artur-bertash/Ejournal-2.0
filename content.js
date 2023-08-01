@@ -355,8 +355,8 @@ function createTable(monthIndex) {
       if (subject.appraisal != []) {
         const grades = [];
         subject.appraisal.forEach(item => {
-          const grade = item.find(info => info.startsWith("grade: "));
-          if (grade) {
+          const grade = item.find(info => info.startsWith("grade: "));        //to consider: додав хуйню яка хендлить кейс з декількома оцінками 
+          if (grade) {                                                        // але всеодно додає тільки перший предмет \\ проблема вище
             grades.push(grade.split(": ")[1]);
           }
         });

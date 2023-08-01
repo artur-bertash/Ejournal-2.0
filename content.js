@@ -379,37 +379,40 @@ function buttonNextMonth() {
 }
 
 function replaceImg() {
+  // Check if the current URL contains "diary.html"; if so, do nothing and return.
   if (document.URL.includes("diary.html")) {
-    return
-
-  }
-  // ejournal 2.0
-
-  const imageElement = document.querySelector('.navbar-brand img');
-
-
-  imageElement.src = 'https://i.imgur.com/9n9EXd2.png';
-
-  // boi 
-  const imageElement2 = document.querySelector('.pt-image img');
-
-  imageElement2.src = 'https://i.imgur.com/SYdvqfA.jpg';
-  var imageElement4 = document.querySelector('header');
-  imageElement4.style.backgroundImage = "url('https://i.imgur.com/5soF4Y1.jpg')";
-
-
-  const imageElement3 = document.querySelector('.profile-photo img');
-  if (imageElement3) {
-    imageElement3.src = 'https://i.imgur.com/SYdvqfA.jpg'
+    return;
   }
 
-  //not working
-  //const imageEnd = document.getElementsByClassName("col-md-3 col-sm-3 col-xs-12 footer_logo");
-  //imageEnd.src = 'https://i.imgur.com/9n9EXd2.png';
+  // Replace the image in the navbar brand with a new image.
+  const imageElementNavbar = document.querySelector('.navbar-brand img');
+  imageElementNavbar.src = 'https://i.imgur.com/9n9EXd2.png';
 
+  // Replace the image in the class 'pt-image' with a new image.
+  const imageElementPT = document.querySelector('.pt-image img');
+  imageElementPT.src = 'https://i.imgur.com/SYdvqfA.jpg';
 
+  // Replace the background image of the 'header' element with a new image.
+  const imageElementHeader = document.querySelector('header');
+  imageElementHeader.style.backgroundImage = "url('https://i.imgur.com/5soF4Y1.jpg')";
 
+  // Replace the profile photo image with a new image if it exists.
+  const imageElementProfile = document.querySelector('.profile-photo img');
+  if (imageElementProfile) {
+    imageElementProfile.src = 'https://i.imgur.com/SYdvqfA.jpg';
+  }
+  var divElement = document.querySelector('.copyright');
+  if (divElement) {
+    // Change the innerHTML of the element
+    divElement.innerHTML = '© Державна наукова установа "Інститут освітньої аналітики", <br>Розробка та підтримка: ТОВ “НОВІ ЗНАННЯ” <br> Розширення створено інтузіастами artur_bertash та ABDHP';
+  }
+  // The following code is commented out because it's not working, but you can debug and fix it if needed.
+  /*
+  const imageEnd = document.getElementsByClassName("col-md-3 col-sm-3 col-xs-12 footer_logo");
+  imageEnd.src = 'https://i.imgur.com/9n9EXd2.png';
+  */
 }
+
 
 replaceImg()
 

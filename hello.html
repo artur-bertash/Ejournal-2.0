@@ -10,48 +10,72 @@
     body {
       margin: 0;
       padding: 0;
-
+      font-family: Arial, sans-serif;
+      background-image: url(https://images.wallpapersden.com/image/download/beautiful-cool-mountains-hd_bG1tbmyUmZqaraWkpJRmbmdlrWZlbWU.jpg);
+      background-size: cover;
+      background-position: center;
     }
 
     .container {
-      width: 100vw;
+      width: 100%;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-image: url(https://images.wallpapersden.com/image/download/beautiful-cool-mountains-hd_bG1tbmyUmZqaraWkpJRmbmdlrWZlbWU.jpg);
     }
 
     .content {
-      background-color: #fff;
-      padding: 50px;
+      background-color: rgba(255, 255, 255, 0.5);
+      padding: 30px;
       border-radius: 20px;
-      opacity: 0.7;
+      text-align: center;
+      max-width: 80%;
     }
 
     .content h1 {
-      text-align: center;
+      font-size: 30px;
+      /* Reduced font size */
+      margin-bottom: 10px;
     }
 
-    .button-panel {
-      padding: 20px;
-      text-align: center;
+    .content h3 {
+      font-size: 20px;
+      /* Reduced font size */
+      margin-bottom: 20px;
+    }
+
+    .content .text {
+      font-size: 16px;
+      /* Reduced font size */
+      margin-bottom: 10px;
+    }
+
+    .content .emojis {
+      font-size: 24px;
+      /* Reduced font size */
+    }
+
+    .content a {
+      text-decoration: none;
+      color: #0066cc;
+      font-weight: normal;
+      /* Removed bold font weight */
     }
 
     .ok-button {
-      padding: 10px;
+      padding: 12px 24px;
       cursor: pointer;
       border-radius: 10px;
+      background-color: #0066cc;
+      color: #fff;
+      font-weight: normal;
+      /* Removed bold font weight */
+      border: none;
+      font-size: 16px;
     }
 
-    .text {
-      font-size: 15px;
-
-    }
-
-    a {
-      text-decoration: none;
-      color: black;
+    .ok-button:hover {
+      background-color: #0052a3;
     }
   </style>
 </head>
@@ -59,15 +83,19 @@
 <body>
   <div class="container">
     <div class="content">
-      <h1>Дякую за встановлення</h1>
-      <h3>Це розширення було створено <b>Артуром Берташом</b></h3>
-      <div class="text">Щоб скористатися розширенням просто перейдіть на вебсайт <a
-          href="https://e-journal.iea.gov.ua/"><b>журанлу</b></a></div>
-      <div class="text">та зайдіть в щоденник. На цього бота вуло витрачено багато</div>
-      <div class="text"> годин роботи, тому я впевнений вам сподобається.</div>
+      <h1>Дякую за встановлення <span class="emojis">🎉</span></h1>
 
+      <h3>Це розширення було створено artur_bertash та ABDHP 🚀</h3>
+      <div class="text">Щоб скористатися розширенням, просто перейдіть на вебсайт <a
+          href="https://e-journal.iea.gov.ua/">журналу</a> 📚</div>
+      <div class="text">та перейдіть в щоденник. На це розширення було витрачено багато
+      </div>
+      <div class="text">годин роботи, тому ми впевнені, що
+        вам сподобається. 🙈</div>
 
-      <div class="button-panel"><button class="ok-button">Зрозуміло</button></div>
+      <div class="button-panel">
+        <button class="ok-button">Зрозуміло</button>
+      </div>
     </div>
   </div>
   <script src="hello.js"></script>

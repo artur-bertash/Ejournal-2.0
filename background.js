@@ -55,7 +55,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     myFunction();
   }
 });
+/*
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.isFull === true) {
+    // Run your desired function here
+    console.log(true)
 
+  } else {
+    console.log(false)
+  }
+});
+*/
 function myFunction() {
   // Your code here
   if (collectingState != "idle") return;
@@ -217,6 +227,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       dataType: "months",
     });
     console.log(collectedMonths)
+    ischanged = []
   }
 });
 

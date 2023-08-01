@@ -502,3 +502,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     document.body.appendChild(box)
   }
 });
+
+
+/*       supposed to show a warning sign when page reloaded but works fine without it
+function checkIfTable() {
+  if (document.URL.includes("diary.html")) {
+    return;
+  }
+  const contentDiv = document.querySelector('.content');
+  const tableElement = contentDiv.querySelector('table');
+  chrome.runtime.sendMessage({ isFull: tableElement !== null })
+
+}
+
+*/

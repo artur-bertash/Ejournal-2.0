@@ -350,17 +350,18 @@ function createTable(monthIndex) {
       }
 
       const tr = subjectRowMap.get(subject.name);
-      if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
-      const td = createAndAppend(tr, 'td');
+      //if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
+      //const td = createAndAppend(tr, 'td');
       if (subject.appraisal != []) {
-        const grades = [];
+        const td = rowsProcessed.includes(tr) ? tr.firstChild : createAndAppend(tr, 'td');
+        const grades = td.innerHTML.split(',');
         subject.appraisal.forEach(item => {
           const grade = item.find(info => info.startsWith("grade: "));        //to consider: додав хуйню яка хендлить кейс з декількома оцінками 
           if (grade) {                                                        // але всеодно додає тільки перший предмет \\ проблема вище
             grades.push(grade.split(": ")[1]);
           }
+          td.innerHTML = grades
         });
-        td.innerHTML = grades
       }
       rowsProcessed.push(tr);
     });

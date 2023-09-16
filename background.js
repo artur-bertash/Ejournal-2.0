@@ -1,4 +1,4 @@
-/**
+/*
  * @typedef {Object | "none"} AppraisalData
  * @property {string} grade
  * @property {string} type
@@ -8,7 +8,7 @@
  * @property {number} number
  * @property {string} name
  * @property {string} homework
- * @property {AppraisalData} appraisal
+ * @property {AppraisalData[]} appraisals
  * 
  * @typedef {Object} Day
  * @property {string} date

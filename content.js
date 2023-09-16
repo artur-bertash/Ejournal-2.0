@@ -7,7 +7,7 @@
 //}
 
 /**
- * @typedef {Object | "none"} AppraisalData
+ * @typedef {Object} AppraisalData
  * @property {string} grade
  * @property {string} type
  * @property {string} comment
@@ -16,7 +16,7 @@
  * @property {number} number
  * @property {string} name
  * @property {string} homework
- * @property {AppraisalData} appraisal
+ * @property {AppraisalData[]} appraisals
  * 
  * @typedef {Object} Day
  * @property {string} date
@@ -34,18 +34,18 @@ function parseTable(table) {
   const data = [];
 
   function parseAppraisalData(modalBody) {
-    const appraisalData = [];
+    const appraisalData = {};
     const paragraphs = Array.from(modalBody.querySelectorAll('p'));
     paragraphs.forEach((p) => {
       const parts = p.textContent.split(':');
       if (parts.length === 2) {
         const key = parts[0].trim();
         const value = parts[1].trim();
-        appraisalData.push({
+        appraisalData[{
           "Оцінка": "grade",
           "Тип": "type",
           "Коментар": "comment",
-        }[key] + ": " + value);
+        }[key]] = value;
       }
     });
     return appraisalData;
@@ -74,9 +74,9 @@ function parseTable(table) {
             const appraisalData = parseAppraisalData(modalBody);
             appraisals.push(appraisalData);
           });
-          rowData.appraisal = appraisals;
+          rowData.appraisals = appraisals;
         } else {
-          rowData.appraisal = [];
+          rowData.appraisals = [];
         }
       } else {
         rowData[header] = cell.textContent.trim();
@@ -316,6 +316,7 @@ function createTable(monthIndex) {
     return
   }
 
+  /** @type {Day[]} */
   const days = months[monthIndex] ?? "throw";
   if (days == "throw") return;
 
@@ -352,14 +353,15 @@ function createTable(monthIndex) {
       const tr = subjectRowMap.get(subject.name);
       //if (rowsProcessed.includes(tr)) return; // to consider: показує тільки першу оцінку за день, треба буде думати як інакше зробити
       //const td = createAndAppend(tr, 'td');
-      if (subject.appraisal != []) {
-        const td = rowsProcessed.includes(tr) ? tr.firstChild : createAndAppend(tr, 'td');
-        const grades = td.innerHTML.split(',');
-        subject.appraisal.forEach(item => {
-          const grade = item.find(info => info.startsWith("grade: "));        //to consider: додав хуйню яка хендлить кейс з декількома оцінками 
+      if (subject.appraisals != []) {
+        const td = rowsProcessed.includes(tr) ? tr.lastChild : createAndAppend(tr, 'td');
+        const grades = td.innerHTML.split(',').filter(g => g.length);
+        subject.appraisals.forEach(item => {
+          /*const grade = item.find(info => info.startsWith("grade: "));        //to consider: додав хуйню яка хендлить кейс з декількома оцінками 
           if (grade) {                                                        // але всеодно додає тільки перший предмет \\ проблема вище
             grades.push(grade.split(": ")[1]);
-          }
+          }*/
+          if (typeof item == 'object') grades.push(item.grade);
           td.innerHTML = grades
         });
       }
